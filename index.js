@@ -8,7 +8,8 @@ const url = 'mongodb://localhost:27017/nucampsite'
 const connect = mongoose.connect(url, {
   useCreateIndex: true,
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
 })
 
 // returns promise
@@ -35,13 +36,29 @@ connect.then(() => {
   //returns promise that resolves to the new document
   .then(campsite => {
     console.log(campsite)
-    return Campsite.find()
+    // params: docID, Obj with update operator, field to be changed 
+    return Campsite.findByIdAndUpdate(campsite._id, {
+      $set: { description: 'UPdated Test Docment'}
+    }, {
+      // requires promise to return updated object - not the defalut behavior
+      new: true
+    })
   })
-  //^returned found docs in array of objects
+  //^returned updated object
+  .then(campsite => {
+    console.log(campsite)
+    //campsite.comments is subdocument - stored as array
+    campsite.comments.push({
+      rating: 5,
+      text: 'What a magnificent view!',
+      author: 'Tinus Lorvaldes'
+    })
 
-  // delete all documents created from campsite model 
-  .then(campsites => {
-    console.log(campsites)
+    return campsite.save()
+  })
+  // delete documents created from campsite model 
+  .then(campsite => {
+    console.log(campsite) // logging doc with sub document
     return Campsite.deleteMany()
   })
   // connection close
