@@ -17,13 +17,22 @@ connect.then(() => {
 
   //new document(row)
   // Validation erros will be thrown if this info doesn't match schema
-  const newCampsite = new Campsite({
+
+  //Syntax 1:
+    // create
+      // const newCampsite = new Campsite({
+      //   name: 'React Lake Campground',
+      //   description: 'test'
+      // })
+    //save
+      // newCampsite.save() - returns promise with success status
+
+  //Syntax 2:
+  Campsite.create({
     name: 'React Lake Campground',
     description: 'test'
   })
-
-  newCampsite.save()
-  //^retured promise with success status
+  //returns promise that resolves to the new document
   .then(campsite => {
     console.log(campsite)
     return Campsite.find()
